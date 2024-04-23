@@ -1,5 +1,6 @@
 const Express = require("express");
 const cors = require("cors");
+const authRouter = require("./routes/auth.route");
 //TODO add routers EX: const userRouter = require("./routers/user.route.js");
 
 const app = Express();
@@ -13,4 +14,5 @@ app.get("/", (req, res) => {
   res.json({ message: "Blog API is working!" });
 });
 
+app.use("/api/auth", authRouter);
 module.exports = app;
