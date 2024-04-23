@@ -17,8 +17,32 @@ async function registerUser(req, res) {
   }
 }
 
+async function loginUser(req, res) {
+  const { email, password } = req.body;
+
+  try {
+    const user = await User.findOne({
+      email,
+    }).select(["+password"]);
+
+    if (!user) {
+      throw new Error("Credentials missing");
+    }
+
+    const isPasswordTheSame = await bcrypt.compare(password, user.password);
+    if (!isPasswordTheSame) {
+      throw new Error("Credentials missing, password is incorrect");
+    }
+  } catch (error) {
+    res.status(404).json({
+      message: error.message,
+    });
+  }
+}
+
 module.exports = {
   registerUser,
+  loginUser,
 };
 
 // // TODO setup auth controllers
