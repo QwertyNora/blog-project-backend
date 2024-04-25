@@ -20,15 +20,16 @@ const createPost = async (req, res) => {
 };
 
 const getPosts = async (req, res) => {
-  const { page = 1, limit = 3 } = req.query; // Default to page 1, limit 3
+  const { page = 1, limit = 3 } = req.query;
   try {
     const posts = await Post.find()
-      .sort({ createdAt: -1 }) // Sort by creation date, descending
-      .populate("createdBy", "firstName lastName") // Only populate firstName and lastName
+      .sort({ createdAt: -1 })
+      .populate("createdBy", "firstName lastName")
       .limit(limit * 1)
       .skip((page - 1) * limit)
       .exec();
-    const count = await Post.countDocuments(); // Total count of posts
+    const count = await Post.countDocuments();
+    console.log(posts);
     res.json({
       posts,
       totalPages: Math.ceil(count / limit),
