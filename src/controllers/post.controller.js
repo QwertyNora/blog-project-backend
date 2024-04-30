@@ -25,6 +25,14 @@ const getPosts = async (req, res) => {
     const posts = await Post.find()
       .sort({ createdAt: -1 })
       .populate("createdBy", "firstName lastName")
+      .populate({
+        path: "comments",
+        populate: {
+          path: "createdBy",
+          model: "User",
+          select: "firstName lastName",
+        },
+      })
       .limit(limit * 1)
       .skip((page - 1) * limit)
       .exec();
