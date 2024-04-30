@@ -7,6 +7,11 @@ const addComment = async (req, res) => {
   const userId = req.userId; // from authMiddleware
 
   try {
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
     const comment = new Comment({
       content,
       createdBy: userId,
@@ -30,7 +35,7 @@ const getCommentsByPost = async (req, res) => {
   try {
     const comments = await Comment.find({ post: postId }).populate(
       "createdBy",
-      "username"
+      "firstName lastName"
     );
     res.json(comments);
   } catch (error) {
