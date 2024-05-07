@@ -22,6 +22,21 @@ const commentSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+const inappropriateWords = [
+  "banan",
+  "fan",
+  "helvete",
+  "skit",
+  "jävlar",
+  "satan",
+];
+
+commentSchema.pre("save", function (next) {
+  const regex = new RegExp(inappropriateWords.join("|"), "gi");
+  this.content = this.content.replace(regex, "***");
+  next();
+});
+
 const Comment = mongoose.model("Comment", commentSchema);
 
 module.exports = Comment;

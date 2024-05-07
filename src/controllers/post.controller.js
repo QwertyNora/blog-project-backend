@@ -37,7 +37,6 @@ const getPosts = async (req, res) => {
       .skip((page - 1) * limit)
       .exec();
     const count = await Post.countDocuments();
-    console.log(posts);
     res.json({
       posts,
       totalPages: Math.ceil(count / limit),

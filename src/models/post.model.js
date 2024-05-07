@@ -30,6 +30,22 @@ const postSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+const inappropriateWords = [
+  "banan",
+  "fan",
+  "helvete",
+  "skit",
+  "jävlar",
+  "satan",
+];
+
+postSchema.pre("save", function (next) {
+  const regex = new RegExp(inappropriateWords.join("|"), "gi");
+  this.title = this.title.replace(regex, "***");
+  this.content = this.content.replace(regex, "***");
+  next();
+});
+
 const Post = mongoose.model("Post", postSchema);
 
 module.exports = Post;

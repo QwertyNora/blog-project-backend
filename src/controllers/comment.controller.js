@@ -21,7 +21,13 @@ const addComment = async (req, res) => {
 
     await Post.findByIdAndUpdate(postId, { $push: { comments: comment._id } });
 
-    res.status(201).json(comment);
+    // Populate createdBy after saving the comment
+    const populatedComment = await Comment.findById(comment._id).populate(
+      "createdBy",
+      "firstName lastName"
+    );
+
+    res.status(201).json(populatedComment);
   } catch (error) {
     res
       .status(400)
