@@ -1,5 +1,6 @@
 const Comment = require("../models/comment.model");
 const Post = require("../models/post.model");
+const User = require("../models/user.model");
 
 const addComment = async (req, res) => {
   const { postId } = req.params;
@@ -50,7 +51,32 @@ const getCommentsByPost = async (req, res) => {
   }
 };
 
+const deleteComment = async (req, res) => {
+  const { commentId } = req.params;
+  const userId = req.userId;
+
+  try {
+    const user = await User.findById(userId);
+    if (!user.admin) {
+      console.log(user);
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+
+    const comment = await Comment.findByIdAndDelete(commentId);
+    if (!comment) {
+      return res.status(404).json({ message: "Comment not found" });
+    }
+
+    res.status(200).json({ message: "Comment deleted successfully" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error deleting comment", error: error.message });
+  }
+};
+
 module.exports = {
   addComment,
   getCommentsByPost,
+  deleteComment,
 };

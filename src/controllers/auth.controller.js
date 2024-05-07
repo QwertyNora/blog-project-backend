@@ -22,6 +22,7 @@ async function registerUser(req, res) {
         username: userObject.username,
         fullName: userObject.fullName,
         email: userObject.email,
+        admin: userObject.admin,
       },
       tokens,
     });
@@ -37,22 +38,30 @@ async function registerUser(req, res) {
 async function loginUser(req, res) {
   const { email, password } = req.body;
   try {
-    const user = await User.findOne({
-      email,
-    }).select(["+password"]);
+    const user = await User.findOne({ email }).select("+password"); // Ensure to select the admin field if it's not selected by default
 
     if (!user) {
-      throw new Error("Credentials missing");
+      return res.status(404).json({ message: "User not found" });
     }
+
     const isPasswordTheSame = await bcrypt.compare(password, user.password);
     if (!isPasswordTheSame) {
-      throw new Error("Credentials missing");
+      return res.status(401).json({ message: "Invalid credentials" });
     }
-    const token = generateAccessAndRefreshToken(user);
-    res.json(token);
+
+    const tokens = generateAccessAndRefreshToken(user);
+    res.json({
+      tokens,
+      user: {
+        id: user._id,
+        username: user.username,
+        admin: user.admin, // Include the admin status
+      },
+    });
   } catch (error) {
-    res.status(404).json({
-      message: error.message,
+    res.status(500).json({
+      message: "Authentication failed",
+      error: error.message,
     });
   }
 }
