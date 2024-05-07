@@ -4,7 +4,7 @@ const Post = require("../models/post.model");
 const addComment = async (req, res) => {
   const { postId } = req.params;
   const { content } = req.body;
-  const userId = req.userId; // from authMiddleware
+  const userId = req.userId;
 
   try {
     const post = await Post.findById(postId);
@@ -21,7 +21,6 @@ const addComment = async (req, res) => {
 
     await Post.findByIdAndUpdate(postId, { $push: { comments: comment._id } });
 
-    // Populate createdBy after saving the comment
     const populatedComment = await Comment.findById(comment._id).populate(
       "createdBy",
       "firstName lastName"
