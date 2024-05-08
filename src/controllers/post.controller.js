@@ -67,7 +67,17 @@ const deletePost = async (req, res) => {
     }
 
     // Delete all comments associated with the post
-    await Comment.deleteMany({ post: postId });
+    try {
+      const deleteResult = await Comment.deleteMany({ post: postId });
+      if (deleteResult.deletedCount === 0) {
+        console.log("No comments found or deleted for post:", postId);
+      }
+    } catch (error) {
+      console.error("Failed to delete comments for post:", postId, error);
+      return res
+        .status(500)
+        .json({ message: "Failed to delete comments", error: error.message });
+    }
 
     res
       .status(200)
