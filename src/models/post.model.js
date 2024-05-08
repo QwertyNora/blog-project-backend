@@ -37,6 +37,7 @@ const inappropriateWords = [
   "skit",
   "jävlar",
   "satan",
+  "fuck",
 ];
 
 postSchema.pre("save", function (next) {
